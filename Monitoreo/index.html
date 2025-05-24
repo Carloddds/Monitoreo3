@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"> <a href="server.js"></a>
+    <a href="reportar.js"></a>
+    <a href="script.js"></a>
+    <title>Monitoreo de Dispositivos</title>
+        
+    <style>
+        body { background: #111; color: #0f0; font-family: monospace; }
+        h1 { text-align: center; }
+        .monitor {
+            background: #222;
+            border: 2px solid #0f0;
+            border-radius: 8px;
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            background: #181818;
+            border-left: 4px solid #0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Monitoreo de Dispositivos</h1>
+    <div id="devices" class="monitor">
+        Cargando información de dispositivos...
+    </div>
+    <script>
+    async function fetchDevices() {
+        try {
+            // Cambia la URL si tu backend no está en localhost
+            const response = await fetch('http://localhost:3000/api/dispositivos');
+            if (!response.ok) throw new Error('No se pudo consultar el servidor');
+            const devices = await response.json();
+            let html = '';
+            devices.forEach(device => {
+                html += `<div class="status">
+                    <strong>Dispositivo:</strong> ${device.nombre} <br>
+                    <strong>Estado:</strong> <span style="color:lime">${device.estado}</span><br>
+                    <strong>Última actividad:</strong> ${device.ultima_actividad}<br>
+                    <strong>Ubicación:</strong> ${device.ubicacion}
+                </div>`;
+            });
+            document.getElementById('devices').innerHTML = html;
+        } catch (e) {
+            document.getElementById('devices').innerText = 'Error al obtener datos: ' + e.message;
+        }
+    }
+
+    // Refresca cada 10 segundos
+    setInterval(fetchDevices, 10000);
+    fetchDevices();
+    </script>
+</body>
+</html>
